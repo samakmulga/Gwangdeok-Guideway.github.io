@@ -59,9 +59,34 @@
             max-width: 500px;
             text-align: center;
         }
+                /* 스크롤 표시 스타일 */
+        #scrollIndicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* 표시 애니메이션 */
+        .fade-in {
+            opacity: 1;
+        }
+
+        .fade-out {
+            opacity: 0;
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-6">
+    <div id="scrollIndicator">아래로 스크롤하세요 ↓</div>
     <img src="교실배치.png" alt="사막물개와 고태현의 여정">
     <!-- 모달 창 -->
     <div id="modal" class="modal">
@@ -206,7 +231,19 @@
         function closeModal() {
             document.getElementById("modal").style.display = "none";
         }
-        
+         // 스크롤 표시 잠깐 보여주고 사라지게 하는 코드
+        const scrollIndicator = document.getElementById('scrollIndicator');
+
+        // 페이지 접속 시 나타나게
+        window.addEventListener('load', () => {
+            scrollIndicator.classList.add('fade-in');  // fade-in 적용
+
+            // 3초 후에 표시 사라지게 설정
+            setTimeout(() => {
+                scrollIndicator.classList.remove('fade-in');
+                scrollIndicator.classList.add('fade-out');  // fade-out 적용
+            }, 3000);
+        });
 
 // Cool-looking script 
 const Utils = {
