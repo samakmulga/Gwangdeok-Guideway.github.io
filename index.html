@@ -1,50 +1,30 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>냥냥 공룡 게임</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: #f7f7f7;
-    }
-
-    canvas {
-      display: block;
-      margin: 0 auto;
-      background: #ddd;
-    }
-
-    .jump-button {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 15px 30px;
-      font-size: 20px;
-      font-weight: bold;
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-    }
-  </style>
-</head>
-<body>
-  <canvas id="gameCanvas" width="800" height="300"></canvas>
-  <button class="jump-button">점프!</button>
-
-  <script>
+<script>
     (function () {
       const canvas = document.getElementById("gameCanvas");
       const ctx = canvas.getContext("2d");
 
       let dino = { x: 50, y: 200, width: 50, height: 50, velocityY: 0, isJumping: false };
       const gravity = 0.8;
+      let obstacles = [];
+      let isGameOver = false;
+
+      // 공룡 대사 리스트
+      const dinoDialogs = [
+        "공룡: 달린다냥! 북딱북딱!",
+        "공룡: 점프다냥! 이기야!",
+        "공룡: 장애물 따위 어림도 없지!",
+        "공룡: 군침이 싹 도는 점프다냥!",
+        "공룡: 고로시 당하기 싫으면 뛰어라냥!",
+        "공룡: 알잘딱깔센한 동작이다냥!",
+        "공룡: 킹받네, 장애물이 이렇게 많다니!",
+        "공룡: 야무지게 뛴다냥!",
+        "공룡: 아니 근데 장애물 많아도 어쩔티비~",
+        "공룡: 응애 나 아기 공룡이다냥!",
+      ];
+
+      function getRandomDialog() {
+        return dinoDialogs[Math.floor(Math.random() * dinoDialogs.length)];
+      }
 
       function drawDino() {
         ctx.fillStyle = "#ff5722";
@@ -60,34 +40,79 @@
             dino.y = 200;
             dino.velocityY = 0;
             dino.isJumping = false;
+            updateDialog("공룡: 착지 성공이다냥!");
           }
         }
       }
 
+      function drawObstacles() {
+        ctx.fillStyle = "#333";
+        obstacles.forEach((obstacle) => {
+          ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        });
+      }
+
+      function updateObstacles() {
+        obstacles.forEach((obstacle) => {
+          obstacle.x -= 5;
+        });
+
+        obstacles = obstacles.filter((obstacle) => obstacle.x + obstacle.width > 0);
+
+        if (Math.random() < 0.02) {
+          obstacles.push({ x: 800, y: 250, width: 20, height: 50 });
+        }
+      }
+
+      function checkCollision() {
+        obstacles.forEach((obstacle) => {
+          if (
+            dino.x < obstacle.x + obstacle.width &&
+            dino.x + dino.width > obstacle.x &&
+            dino.y < obstacle.y + obstacle.height &&
+            dino.y + dino.height > obstacle.y
+          ) {
+            isGameOver = true;
+            updateDialog("공룡: 예은됐다냥... 게임 오버!");
+          }
+        });
+      }
+
       function jumpDino() {
-        if (!dino.isJumping) {
+        if (!dino.isJumping && !isGameOver) {
           dino.isJumping = true;
           dino.velocityY = -15;
+          updateDialog(getRandomDialog());
         }
       }
 
       document.addEventListener("keydown", (e) => {
-        if (e.code === "Space" || e.code === "ArrowUp") {
+        if ((e.code === "Space" || e.code === "ArrowUp") && !isGameOver) {
           jumpDino();
         }
       });
 
-      document.querySelector(".jump-button").addEventListener("click", jumpDino);
+      document.querySelector(".jump-button").addEventListener("click", () => {
+        if (!isGameOver) jumpDino();
+      });
+
+      function updateDialog(message) {
+        document.querySelector(".dialog").textContent = message;
+      }
 
       function gameLoop() {
+        if (isGameOver) return;
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawDino();
+        drawObstacles();
         updateDino();
+        updateObstacles();
+        checkCollision();
+
         requestAnimationFrame(gameLoop);
       }
 
       gameLoop();
     })();
   </script>
-</body>
-</html>
