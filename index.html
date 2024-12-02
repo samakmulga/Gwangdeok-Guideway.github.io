@@ -1,4 +1,55 @@
-<script>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>냥냥 공룡 게임</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #f7f7f7;
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: #ddd;
+    }
+
+    .jump-button {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 30px;
+      font-size: 20px;
+      font-weight: bold;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+    }
+
+    .dialog {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="dialog">공룡: 달린다냥! 북딱북딱!</div>
+  <canvas id="gameCanvas" width="800" height="300"></canvas>
+  <button class="jump-button">점프!</button>
+
+  <script>
     (function () {
       const canvas = document.getElementById("gameCanvas");
       const ctx = canvas.getContext("2d");
@@ -7,6 +58,8 @@
       const gravity = 0.8;
       let obstacles = [];
       let isGameOver = false;
+      let gameSpeed = 5;
+      let score = 0;
 
       // 공룡 대사 리스트
       const dinoDialogs = [
@@ -54,13 +107,14 @@
 
       function updateObstacles() {
         obstacles.forEach((obstacle) => {
-          obstacle.x -= 5;
+          obstacle.x -= gameSpeed;
         });
 
         obstacles = obstacles.filter((obstacle) => obstacle.x + obstacle.width > 0);
 
-        if (Math.random() < 0.02) {
-          obstacles.push({ x: 800, y: 250, width: 20, height: 50 });
+        if (Math.random() < 0.03) {
+          const height = Math.random() < 0.5 ? 50 : 80; // 낮은 장애물과 높은 장애물
+          obstacles.push({ x: 800, y: 300 - height, width: 20, height: height });
         }
       }
 
@@ -73,7 +127,7 @@
             dino.y + dino.height > obstacle.y
           ) {
             isGameOver = true;
-            updateDialog("공룡: 예은됐다냥... 게임 오버!");
+            updateDialog(`공룡: 예은됐다냥... 게임 오버! 점수: ${score}`);
           }
         });
       }
@@ -86,6 +140,10 @@
         }
       }
 
+      function updateDialog(message) {
+        document.querySelector(".dialog").textContent = message;
+      }
+
       document.addEventListener("keydown", (e) => {
         if ((e.code === "Space" || e.code === "ArrowUp") && !isGameOver) {
           jumpDino();
@@ -95,10 +153,6 @@
       document.querySelector(".jump-button").addEventListener("click", () => {
         if (!isGameOver) jumpDino();
       });
-
-      function updateDialog(message) {
-        document.querySelector(".dialog").textContent = message;
-      }
 
       function gameLoop() {
         if (isGameOver) return;
@@ -110,9 +164,18 @@
         updateObstacles();
         checkCollision();
 
+        // 점수와 난이도 업데이트
+        score += 1;
+        if (score % 500 === 0) {
+          gameSpeed += 1;
+          updateDialog(`공룡: 스피드 업! 난이도 상승! 점수: ${score}`);
+        }
+
         requestAnimationFrame(gameLoop);
       }
 
       gameLoop();
     })();
   </script>
+</body>
+</html>
