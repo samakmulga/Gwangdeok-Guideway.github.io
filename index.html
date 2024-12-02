@@ -19,28 +19,32 @@
 
     .jump-button {
       position: fixed;
-      bottom: 20px;
+      bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      padding: 15px 30px;
-      font-size: 20px;
+      padding: 25px 50px;
+      font-size: 24px;
       font-weight: bold;
       background-color: #4caf50;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
       cursor: pointer;
     }
 
     .dialog {
       position: fixed;
-      top: 10px;
+      top: 20px;
       left: 50%;
       transform: translateX(-50%);
       font-size: 24px;
       font-weight: bold;
       color: #333;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
@@ -57,22 +61,20 @@
       let dino = { x: 50, y: 200, width: 50, height: 50, velocityY: 0, isJumping: false };
       const gravity = 0.8;
       let obstacles = [];
-      let isGameOver = false;
       let gameSpeed = 5;
       let score = 0;
 
-      // 공룡 대사 리스트
       const dinoDialogs = [
         "공룡: 달린다냥! 북딱북딱!",
         "공룡: 점프다냥! 이기야!",
         "공룡: 장애물 따위 어림도 없지!",
-        "공룡: 군침이 싹 도는 점프다냥!",
-        "공룡: 고로시 당하기 싫으면 뛰어라냥!",
-        "공룡: 알잘딱깔센한 동작이다냥!",
-        "공룡: 킹받네, 장애물이 이렇게 많다니!",
         "공룡: 야무지게 뛴다냥!",
-        "공룡: 아니 근데 장애물 많아도 어쩔티비~",
+        "공룡: 알잘딱깔센하게 간다냥!",
+        "공룡: 킹받네! 장애물이 너무 많다냥!",
         "공룡: 응애 나 아기 공룡이다냥!",
+        "공룡: 군침이 싹 도는 속도다냥!",
+        "공룡: 점점 빨라진다냥! 북딱북딱!",
+        "공룡: 최고 기록 갱신 간다냥!"
       ];
 
       function getRandomDialog() {
@@ -93,7 +95,6 @@
             dino.y = 200;
             dino.velocityY = 0;
             dino.isJumping = false;
-            updateDialog("공룡: 착지 성공이다냥!");
           }
         }
       }
@@ -113,27 +114,13 @@
         obstacles = obstacles.filter((obstacle) => obstacle.x + obstacle.width > 0);
 
         if (Math.random() < 0.03) {
-          const height = Math.random() < 0.5 ? 50 : 80; // 낮은 장애물과 높은 장애물
+          const height = Math.random() < 0.5 ? 50 : 80;
           obstacles.push({ x: 800, y: 300 - height, width: 20, height: height });
         }
       }
 
-      function checkCollision() {
-        obstacles.forEach((obstacle) => {
-          if (
-            dino.x < obstacle.x + obstacle.width &&
-            dino.x + dino.width > obstacle.x &&
-            dino.y < obstacle.y + obstacle.height &&
-            dino.y + dino.height > obstacle.y
-          ) {
-            isGameOver = true;
-            updateDialog(`공룡: 예은됐다냥... 게임 오버! 점수: ${score}`);
-          }
-        });
-      }
-
       function jumpDino() {
-        if (!dino.isJumping && !isGameOver) {
+        if (!dino.isJumping) {
           dino.isJumping = true;
           dino.velocityY = -15;
           updateDialog(getRandomDialog());
@@ -141,34 +128,33 @@
       }
 
       function updateDialog(message) {
-        document.querySelector(".dialog").textContent = message;
+        const dialog = document.querySelector(".dialog");
+        dialog.textContent = message;
+        dialog.style.opacity = 1;
+        setTimeout(() => {
+          dialog.style.opacity = 0.9;
+        }, 3000); // 대사 오래 띄움
       }
 
       document.addEventListener("keydown", (e) => {
-        if ((e.code === "Space" || e.code === "ArrowUp") && !isGameOver) {
+        if (e.code === "Space" || e.code === "ArrowUp") {
           jumpDino();
         }
       });
 
-      document.querySelector(".jump-button").addEventListener("click", () => {
-        if (!isGameOver) jumpDino();
-      });
+      document.querySelector(".jump-button").addEventListener("click", jumpDino);
 
       function gameLoop() {
-        if (isGameOver) return;
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawDino();
         drawObstacles();
         updateDino();
         updateObstacles();
-        checkCollision();
 
-        // 점수와 난이도 업데이트
         score += 1;
         if (score % 500 === 0) {
           gameSpeed += 1;
-          updateDialog(`공룡: 스피드 업! 난이도 상승! 점수: ${score}`);
+          updateDialog(`공룡: 스피드 업이다냥! 점수: ${score}`);
         }
 
         requestAnimationFrame(gameLoop);
