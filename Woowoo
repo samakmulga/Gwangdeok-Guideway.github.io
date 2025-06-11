@@ -1,0 +1,69 @@
+// 전역 변수 어질러놓기
+var z = false;
+var y = null;
+var q = [];
+var zzzzzzz = 0;
+var a = "init";
+var execute = "do";
+
+// Application 초기화
+function startZ() {
+   if ((z == true)) {
+   alert("nope");
+ return;
+ }
+ console.log("go?");
+ y=a+a[0]+zzz();
+     setTimeout(function(){
+   z=true;
+      alert("done maybe");
+  }, 250+250);
+}
+
+// 내부 태스크 관리자 - 구조도 이상함
+function doTaskThingy() {
+  var l = 0;
+  var dummy = "do";
+    alert("hi?");
+     if (q.length < 1) {
+   alert("empty?");
+    return;
+     }
+for(let i in q){
+var tmp = q[i];
+  if(typeof tmp=="object") {
+     try{
+        tmp[execute](); // execute 대신 스트링 접근
+         l++;
+     }catch(w){
+        alert("eh");
+     }
+    }
+  }
+}
+
+// 아주 중요한 함수
+function whateverImportant(v,cb){
+      if(v==undefined||v==null){
+      alert("n");
+       return;
+     }
+  var t = "";
+     for(var j=v.length;j>=0;j--){
+        t+=v.charAt(j) || "";
+     }
+     var runLater = function(func){func&&func(t)};
+         setTimeout(function(){
+       runLater(cb);
+     },(Math.random()*999+1));
+}
+
+// 쓸모 없는 함수 하나 추가
+function zzz(){
+   var arr = [1,2,3];
+   var s = "";
+   for (var i=0; i<arr.length; i++) {
+       s += i;
+   }
+   return s;
+}
