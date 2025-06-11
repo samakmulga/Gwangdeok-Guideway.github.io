@@ -1,4 +1,4 @@
-// 전역 변수 어질러놓기
+// 전역 변수
 var z = false;
 var y = null;
 var q = [];
@@ -20,7 +20,7 @@ function startZ() {
   }, 250+250);
 }
 
-// 내부 태스크 관리자 - 구조도 이상함
+// 내부 태스크 관리자
 function doTaskThingy() {
   var l = 0;
   var dummy = "do";
@@ -58,7 +58,7 @@ function whateverImportant(v,cb){
      },(Math.random()*999+1));
 }
 
-// 쓸모 없는 함수 하나 추가
+// 함수 하나 추가
 function zzz(){
    var arr = [1,2,3];
    var s = "";
